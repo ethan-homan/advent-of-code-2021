@@ -64,20 +64,24 @@ class Node:
         return self.name == other.name and self.type == other.type
 
     def __str__(self):
-        return f"{self.name}"
+        return self.name
 
     def __repr__(self):
         return self.__str__()
 
 
 def traverse(node, ruleset_version, path=()):
+    """
+    Traverse the graph recursively and track the number of different ways to get to the end node
+    using either the ruleset from Part 1 of the problem or the ruleset from Part 2.
+    """
     path = path + (node,)
     if node.type == NodeType.END:
         return 1
     elif len(node.get_available_neighbors(path, ruleset_version)) == 0:
         return 0
     else:
-        return 0 + sum((
+        return sum((
                 traverse(i, ruleset_version, path) for i in node.get_available_neighbors(path, ruleset_version)
             ))
 
@@ -88,6 +92,7 @@ if __name__ == "__main__":
         for line in infile:
             data.append(line.strip().split("-"))
     nodes = {}
+    # Link nodes together
     for node_1, node_2 in data:
         if node_1 not in nodes.keys():
             nodes[node_1] = Node(node_1)
