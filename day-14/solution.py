@@ -16,20 +16,29 @@ def load_data(file):
     return init_str, char_map
 
 
-def mutate_str(s, char_map):
-    new_str = ""
+def iterate_n(n, s, char_map):
+    pair_counts = {i: 0 for i in char_map.keys()}
+    char_counts = Counter(s)
+
     for i in range(1, len(s)):
-        new_str += s[i - 1]
-        new_str += char_map[s[i - 1: i + 1]]
-    new_str += s[-1]
-    return new_str
+        pair_counts[s[i - 1: i + 1]] += 1
+
+    for i in range(n):
+        new_counts = {i: 0 for i in char_map.keys()}
+        for pair in pair_counts:
+            first, second = pair
+            new_char = char_map[pair]
+            first = first + new_char
+            second = new_char + second
+            new_counts[first] += pair_counts[pair]
+            new_counts[second] += pair_counts[pair]
+            char_counts[new_char] += pair_counts[pair]
+        pair_counts = new_counts
+    counts = sorted(char_counts.values())
+    return counts[-1] - counts[0]
 
 
 if __name__ == "__main__":
     s, char_map = load_data("input.txt")
-    for i in range(10):
-        s = mutate_str(s, char_map)
-    counts = Counter(s)
-    _, lowest = counts.most_common()[-1]
-    _, greatest = counts.most_common()[0]
-    print(greatest - lowest)
+    print(f"Part 1: {iterate_n(10, s, char_map)}")
+    print(f"Part 2: {iterate_n(40, s, char_map)}")
